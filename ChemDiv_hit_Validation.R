@@ -99,9 +99,7 @@ for (document in files){
   Plate <- Plate %>% separate(well_labels, into = c("Row", "Column"), sep = "(?<=[[:upper:]])")
   Plate <- Plate %>% mutate_at(vars(Column), as.numeric)
   Dose <- c(NA, "5 µM", "8 µM", "4 µM", "2 µM", "1 µM", "0.5 µM", "0.25 µM", "0.125 µM", "0.0625 µM", "Vehicle", NA)
-  #NA, NA, "1 µM", "2 µM", "4 µM", "8 µM", "1 µM", "2 µM", "4 µM", "8 µM", "5 µM", NA
   Drug <- c(NA, "Lomitapide", "A", "A", "A", "A", "A", "A", "A", "A", "Vehicle", NA)
-  #NA, "Vehicle", "B", "B", "B", "B", "A", "A", "A", "A", "Lomitapide", NA,
   
   ##Remove drug/dose NAs 
   
@@ -115,10 +113,7 @@ for (document in files){
                                                                    remove = FALSE, 
                                                                    convert = TRUE, 
                                                                    extra = "drop")
-  
-  
-  
-  
+
   ##Outlier handling here, could help wiht Vehicle values issues!
     
   #Calculate the mean and median of the 8 vehicle samples
@@ -136,6 +131,7 @@ for (document in files){
                                                             qcSSMD = SSMD_qc(RLU, Vehicle_Values),
                                                             Average_RLU = mean(RLU, na.rm = TRUE), 
                                                             log2_Average_Fold_Change = log2(mean(Fold_Change, na.rm = TRUE)))
+ 
   Plate_summary <- Plate_summary %>% add_column(Dose = Dose,
                                                 Drug = Drug,
                                                 Date_of_read = rep(Date_of_read),
@@ -200,5 +196,6 @@ for (document in files){
   #saveWorkbook(Plate_sheet, file = FN)
 }
 
+All_plates <- All_plates %>% drop_na(Drug)
 #Separate All plates and summary data? New function for graphing, just work from All_plates, will be perfectly fine to do and out of the same loop
 #
