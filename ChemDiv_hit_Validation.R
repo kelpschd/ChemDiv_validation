@@ -1,15 +1,76 @@
-#Setting up an analysis of Shan's ChemDiv hit validation results from the Mumm lab
-
-#lots as before, get some reference from Elias as well
-
-list.of.packages <- c("xml2", "openxlsx", "tidyverse", "gridExtra", "cowplot", "scales")
+list.of.packages <- c("xml2", "openxlsx", "tidyverse", "ggpubr", "ggbeeswarm", "plater", "gridExtra", "cowplot", "scales")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, library, character.only = TRUE)
 
-#NEED A LIBRARY DECODER - SEE SHAN'S POWERPOINT FOR ALL THE INFO...
 Library_decoder <- as_tibble(read.csv("CHEMdiv_rescreen_DJK.csv"))
 
+##round_any() is a function in the package plyr, but plyr has some 
+##compatibility issues with the tidyverse, thus just writing in the 
+##function manually
+round_any = function(x, accuracy, f=round){f(x/ accuracy) * accuracy}
+
+Define_outliers <- function(x) {
+  Validation.outliers <<- x %>% 
+    filter(Drug_name == i) %>% 
+    group_by(Treatment) %>% 
+    mutate(RLU_Q1 = (quantile(RLU)[[2]]), 
+           RLU_Q3 = (quantile(RLU)[[4]]), 
+           avg = mean(RLU),
+           RLU_IQR = IQR(RLU),
+           Outlier = if_else(RLU > RLU_Q3+1.5*(RLU_IQR) | RLU < RLU_Q1-1.5*(RLU_IQR), "Outlier", "Normal"))}
+
+Define_y_limit <- function(x) {
+  y_lim <<- x %>%
+    filter(Outlier != "Outlier") %>% 
+    pull(RLU) %>% 
+    max(.) %>%
+    round_any(.,50000, ceiling)}
+
+plot_validation_data <- function(x) {
+  m <<- ggplot(data = x, 
+               mapping = aes(x = factor(Treatment, levels = c(
+                 "Vehicle",
+                 "5 µM lomitapide",
+                 "0.0625 µM",
+                 "0.125 µM",
+                 "0.25 µM",
+                 "0.5 µM",
+                 "1 µM",
+                 "2 µM",
+                 "4 µM",
+                 "8 µM")), 
+                 y = RLU)) +
+    geom_boxplot() +
+    geom_point() +
+    scale_y_continuous(
+      name = "Relative Luminescence Units (RLU)",
+      labels = comma, limits = c(0,y_lim), #c(lower limit, upper limit)
+      breaks = seq(0,y_lim,y_lim/10)) +  #seq(lower limit, upper limit, tick frequency)
+    theme(
+      axis.text.x = element_text(face = 'bold', angle = 45, hjust = 1), 
+      axis.title.x = element_blank(),
+      axis.text.y = element_text(face = 'bold'), 
+      axis.title.y = element_text(face = 'bold'),
+      legend.title = element_text(face = 'bold'),
+      legend.text = element_text(face = 'bold'),
+      strip.text.x = element_text(face = 'bold')) +
+    labs(title = paste("Validation of ",i, sep=""), 
+         subtitle = paste(Outlier.count, " total outliers removed", sep = ""),
+         caption = paste("Experiment: ", a, sep = ""))
+}
+
+##following are the functions to calculate SSMD
+SSMD_hs <- function(d) {
+  N = length(d[!is.na(d)])
+  (gamma((N-1)/2)/gamma((N-2)/2))*(sqrt(2/(N-1)))*(mean(d, na.rm = TRUE)/sd(d, na.rm = TRUE))
+}
+
+SSMD_qc <- function(a, b) {
+  #a = sample
+  #b = negative control
+  (median(a, na.rm = TRUE)-median(b, na.rm = TRUE))/(1.4826*sqrt(((mad(a, na.rm = TRUE))^2)+((mad(b, na.rm = TRUE))^2)))
+}
 
 #Fix up these tibbles, they have a lot of uncessary info
 All_plates <- tibble(Row = character(),
@@ -58,17 +119,12 @@ target <- c("A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12",
             "G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11","G12",
             "H1","H2","H3","H4","H5","H6","H7","H8","H9","H10","H11","H12")
 
-##following are the functions to calculate SSMD
-SSMD_hs <- function(d) {
-  N = length(d[!is.na(d)])
-  (gamma((N-1)/2)/gamma((N-2)/2))*(sqrt(2/(N-1)))*(mean(d, na.rm = TRUE)/sd(d, na.rm = TRUE))
-}
 
-SSMD_qc <- function(a, b) {
-  #a = sample
-  #b = negative control
-  (median(a, na.rm = TRUE)-median(b, na.rm = TRUE))/(1.4826*sqrt(((mad(a, na.rm = TRUE))^2)+((mad(b, na.rm = TRUE))^2)))
-}
+
+
+
+
+
 
 files <- list.files("./input_data", full.names = TRUE) #generates a list of all the files within the working directory
 
@@ -112,8 +168,9 @@ for (document in files){
                                                                    sep = "_", 
                                                                    remove = FALSE, 
                                                                    convert = TRUE, 
-                                                                   extra = "drop")
-
+                                                                   extra = "drop") %>% 
+    left_join(Library_decoder, by = c("ChemDiv_rescreen_plate"), keep = TRUE) #this works but its being a pain in the ass right now, need to incorporate the columns into All_data and Summary_data
+  
   ##Outlier handling here, could help wiht Vehicle values issues!
     
   #Calculate the mean and median of the 8 vehicle samples
@@ -196,6 +253,6 @@ for (document in files){
   #saveWorkbook(Plate_sheet, file = FN)
 }
 
-All_plates <- All_plates %>% drop_na(Drug)
+#All_plates <- All_plates %>% drop_na(Drug)
 #Separate All plates and summary data? New function for graphing, just work from All_plates, will be perfectly fine to do and out of the same loop
 #
