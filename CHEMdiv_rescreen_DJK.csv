@@ -1,27 +1,27 @@
-﻿ChemDiv_rescreen_plate,Source_plate,Source_well,Drug_dilution_notes,Fish_addition_notes,Treatment
-1,2,A2,,,J081-0886 
-2,2,A3,,,J081-0957 
-3,2,A4,,,J081-0958 
-4,2,A5,,,J081-0960 
-5,2,A6,,,P657-0788 
-6,2,A7,,,CM4193-3989 
-7,2,A8,,,S798-0259 
-8,2,A9,,,L228-0941 
-9,2,A10,,,S331-0039 
-10,2,A11,,,Y042-3126 
-11,2,B2,,,0133-0036 
-12,2,B3,,,4607-0285 
-13,2,B4,,,4300-0243 
-14,2,B5,,,4311-2656 
-15,2,B6,,,8013-6401 
-16,2,B7,,,J006-0831 
-17,2,B8,,,K784-6212 
-18,2,B9,,,4327-0501 
-19,2,B10,,,R052-1970 
-20,2,B11,,,S591-0002 
-21,2,C2,,,8020-2460 
-22,2,C3,,,V002-2111 
-23,2,C4,,,T159-0005 
+﻿ChemDiv_rescreen_plate,Source_plate,Source_well,Drug_dilution_notes,Fish_addition_notes,Drug_name
+1,2,A2,,,J081-0886
+2,2,A3,,,J081-0957
+3,2,A4,,,J081-0958
+4,2,A5,,,J081-0960
+5,2,A6,,,P657-0788
+6,2,A7,,,CM4193-3989
+7,2,A8,,,S798-0259
+8,2,A9,,,L228-0941
+9,2,A10,,,S331-0039
+10,2,A11,,,Y042-3126
+11,2,B2,,,0133-0036
+12,2,B3,,,4607-0285
+13,2,B4,,,4300-0243
+14,2,B5,,,4311-2656
+15,2,B6,,,8013-6401
+16,2,B7,,,J006-0831
+17,2,B8,,,K784-6212
+18,2,B9,,,4327-0501
+19,2,B10,,,R052-1970
+20,2,B11,,,S591-0002
+21,2,C2,,,8020-2460
+22,2,C3,,,V002-2111
+23,2,C4,,,T159-0005
 24,2,C5,,,D715-2530
 25,2,C6,,,P621-0783
 26,2,C7,,,P657-0799
@@ -67,49 +67,49 @@
 66,1,D3,,,M512-0365
 67,1,D4,,,D585-0117
 68,1,D5,,,D330-0157
-69,1,D6,Drug was diluted in the next day,,Y020-2740 
-70,1,D7,Drug was diluted in the next day,,P970-0634 
-71,1,D8,Drug was diluted in the next day,,6197-5099 
-72,1,D9,Drug was diluted in the next day,,J006-2863 
-73,1,D10,Drug was diluted in the next day,,4327-0582 
-74,1,D11,Drug was diluted in the next day,,FF51-1059 
-75,1,E2,Drug was diluted in the next day,,S672-0566 
-76,1,E3,Drug was diluted in the next day,,4327-0918 
-77,1,E4,Drug was diluted in the next day,,D490-0468 
-78,1,E5,Drug was diluted in the next day,,P621-1408 
-79,1,E6,Drug was diluted in the next day,,S512-0484 
-80,1,E7,Drug was diluted in the next day,,8255-1234 
-81,1,E8,Drug was diluted in the next day,,S795-0078 
-82,1,E9,Drug was diluted in the next day,,V016-7709 
-83,1,E10,Drug was diluted in the next day,both 8 & 4 uM doses killed fish ,S700-1359 
-84,1,E11,Drug was diluted in the next day,,V029-6117 
-85,1,F2,Drug was diluted in the next day,,S425-0971 
-86,1,F3,Drug was diluted in the next day,,S050-0252 
-87,1,F4,Drug was diluted in the next day,,D665-0179 
-88,1,F5,Drug was diluted in the next day,,8012-9997 
-89,1,F6,Drug was diluted in the next day,,J007-1041 
-90,1,F7,Drug was diluted in the next day,,C790-0046 
-91,1,F8,Drug was diluted in the next day,"Wells got flood: G8, 9, 10, H10",4244-3640 
-92,1,F9,Drug was diluted in the next day,,S687-0010 
-93,1,F10,Drug was diluted in the next day,"flood serverly, lost this plate",S324-0201 
-94,1,F11,Drug was diluted in the next day,,V010-0079 
-95,1,G2,Drug was diluted in the next day,"Wells got flood: E2, D3, E4, F5, D6, D7, D9, D10, E8, D11, F11",Y042-3065 
-96,1,G3,Drug was diluted in the next day,,V022-1515 
-97,1,G4,Drug was diluted in the next day,,3817-0028 
-98,1,G5,Drug was diluted in the next day,reuse fish,S069-3970 
-99,1,G6,Drug was diluted in the next day,reuse fish,4244-3644 
-100,1,G7,Drug was diluted in the next day,reuse fish,R052-0386 
-101,1,G8,Drug was diluted in the next day,reuse fish,P315-0821 
-102,1,G9,Drug was diluted in the next day,reuse fish,D361-0251 
-103,1,G10,Drug was diluted in the next day,reuse fish,P315-0850 
-104,1,G11,Drug was diluted in the next day,reuse fish,R052-0651 
-105,1,H2,Drug was diluted in the next day,reuse fish,6321-0294 
-106,1,H3,Drug was diluted in the next day,reuse fish,P657-0743 
-107,1,H4,Drug was diluted in the next day,reuse fish,Y041-9809 
-108,1,H5,Drug was diluted in the next day,reuse fish,T610-0269 
-109,1,H6,Drug was diluted in the next day,reuse fish,V030-6834 
-110,1,H7,Drug was diluted in the next day,,3886-0820 
-111,1,H8,Drug was diluted in the next day,,Y021-0991 
-112,1,H9,Drug was diluted in the next day,,6153-0036 
-113,1,H10,Drug was diluted in the next day,,4299-1972 
-114,1,H11,Drug was diluted in the next day,,Y040-6104 
+69,1,D6,Drug was diluted in the next day,,Y020-2740
+70,1,D7,Drug was diluted in the next day,,P970-0634
+71,1,D8,Drug was diluted in the next day,,6197-5099
+72,1,D9,Drug was diluted in the next day,,J006-2863
+73,1,D10,Drug was diluted in the next day,,4327-0582
+74,1,D11,Drug was diluted in the next day,,FF51-1059
+75,1,E2,Drug was diluted in the next day,,S672-0566
+76,1,E3,Drug was diluted in the next day,,4327-0918
+77,1,E4,Drug was diluted in the next day,,D490-0468
+78,1,E5,Drug was diluted in the next day,,P621-1408
+79,1,E6,Drug was diluted in the next day,,S512-0484
+80,1,E7,Drug was diluted in the next day,,8255-1234
+81,1,E8,Drug was diluted in the next day,,S795-0078
+82,1,E9,Drug was diluted in the next day,,V016-7709
+83,1,E10,Drug was diluted in the next day,both 8 & 4 uM doses killed fish ,S700-1359
+84,1,E11,Drug was diluted in the next day,,V029-6117
+85,1,F2,Drug was diluted in the next day,,S425-0971
+86,1,F3,Drug was diluted in the next day,,S050-0252
+87,1,F4,Drug was diluted in the next day,,D665-0179
+88,1,F5,Drug was diluted in the next day,,8012-9997
+89,1,F6,Drug was diluted in the next day,,J007-1041
+90,1,F7,Drug was diluted in the next day,,C790-0046
+91,1,F8,Drug was diluted in the next day,"Wells got flood: G8, 9, 10, H10",4244-3640
+92,1,F9,Drug was diluted in the next day,,S687-0010
+93,1,F10,Drug was diluted in the next day,"flood serverly, lost this plate",S324-0201
+94,1,F11,Drug was diluted in the next day,,V010-0079
+95,1,G2,Drug was diluted in the next day,"Wells got flood: E2, D3, E4, F5, D6, D7, D9, D10, E8, D11, F11",Y042-3065
+96,1,G3,Drug was diluted in the next day,,V022-1515
+97,1,G4,Drug was diluted in the next day,,3817-0028
+98,1,G5,Drug was diluted in the next day,reuse fish,S069-3970
+99,1,G6,Drug was diluted in the next day,reuse fish,4244-3644
+100,1,G7,Drug was diluted in the next day,reuse fish,R052-0386
+101,1,G8,Drug was diluted in the next day,reuse fish,P315-0821
+102,1,G9,Drug was diluted in the next day,reuse fish,D361-0251
+103,1,G10,Drug was diluted in the next day,reuse fish,P315-0850
+104,1,G11,Drug was diluted in the next day,reuse fish,R052-0651
+105,1,H2,Drug was diluted in the next day,reuse fish,6321-0294
+106,1,H3,Drug was diluted in the next day,reuse fish,P657-0743
+107,1,H4,Drug was diluted in the next day,reuse fish,Y041-9809
+108,1,H5,Drug was diluted in the next day,reuse fish,T610-0269
+109,1,H6,Drug was diluted in the next day,reuse fish,V030-6834
+110,1,H7,Drug was diluted in the next day,,3886-0820
+111,1,H8,Drug was diluted in the next day,,Y021-0991
+112,1,H9,Drug was diluted in the next day,,6153-0036
+113,1,H10,Drug was diluted in the next day,,4299-1972
+114,1,H11,Drug was diluted in the next day,,Y040-6104
