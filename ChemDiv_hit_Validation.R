@@ -11,9 +11,9 @@ Library_decoder <- as_tibble(read.csv("CHEMdiv_rescreen_DJK.csv"))
 round_any = function(x, accuracy, f=round){f(x/ accuracy) * accuracy}
 
 Define_outliers <- function(x) {
-  Validation.outliers <<- x %>% 
+  All_plates.outliers <<- x %>% 
     filter(Drug_name == i) %>% 
-    group_by(Treatment) %>% 
+    group_by(Dose) %>% 
     mutate(RLU_Q1 = (quantile(RLU)[[2]]), 
            RLU_Q3 = (quantile(RLU)[[4]]), 
            avg = mean(RLU),
@@ -27,9 +27,9 @@ Define_y_limit <- function(x) {
     max(.) %>%
     round_any(.,50000, ceiling)}
 
-plot_validation_data <- function(x) {
+plot_All_plates_data <- function(x) {
   m <<- ggplot(data = x, 
-               mapping = aes(x = factor(Treatment, levels = c(
+               mapping = aes(x = factor(Dose, levels = c(
                  "Vehicle",
                  "5 µM lomitapide",
                  "0.0625 µM",
@@ -55,9 +55,8 @@ plot_validation_data <- function(x) {
       legend.title = element_text(face = 'bold'),
       legend.text = element_text(face = 'bold'),
       strip.text.x = element_text(face = 'bold')) +
-    labs(title = paste("Validation of ",i, sep=""), 
-         subtitle = paste(Outlier.count, " total outliers removed", sep = ""),
-         caption = paste("Experiment: ", a, sep = ""))
+    labs(title = paste("Treatment of ",i, sep=""), 
+         subtitle = paste(Outlier.count, " total outliers removed", sep = ""))
 }
 
 ##following are the functions to calculate SSMD
@@ -80,35 +79,7 @@ All_plates <- tibble(Row = character(),
                      Drug = character(),
                      Date_of_read = as.Date(NA),
                      Filename = character(),
-                     Library = character(),
-                     ChemDiv_rescreen_plate = numeric(),
-                     JHDL_test_plate = numeric(),
-                     Original_plate_ID = numeric(),
-                     JHDL_stock_location = numeric(),
-                     JHDL_well_location = character(),
-                     Compound_name = character(), 
-                     Fold_Change = numeric(),
-                     log2_RLU = numeric(), 
-                     Difference = numeric(),
-                     log2_Fold_Change = numeric())
-
-Summary_data <- tibble(Column = numeric(),
-                       Sample_size = integer(),
-                       hsSSMD = numeric(),
-                       qcSSMD = numeric(),
-                       Average_RLU = numeric(),
-                       log2_Average_Fold_Change = numeric(),
-                       Dose = character(),
-                       Drug = character(),
-                       Date_of_read = as.Date(NA),
-                       Filename = character(), 
-                       Library = character(),
-                       ChemDiv_rescreen_plate = numeric(),
-                       JHDL_test_plate = numeric(),
-                       Original_plate_ID = numeric(),
-                       JHDL_stock_location = character(),
-                       JHDL_well_location = character(),
-                       Compound_name = character())
+                     ChemDiv_rescreen_plate = numeric())
 
 target <- c("A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12",
             "B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12",
@@ -118,13 +89,6 @@ target <- c("A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12",
             "F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12",
             "G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11","G12",
             "H1","H2","H3","H4","H5","H6","H7","H8","H9","H10","H11","H12")
-
-
-
-
-
-
-
 
 files <- list.files("./input_data", full.names = TRUE) #generates a list of all the files within the working directory
 
@@ -154,7 +118,7 @@ for (document in files){
   Plate <- Plate %>% arrange(match(target, well_labels)) #reorganizes the dataframe according to target
   Plate <- Plate %>% separate(well_labels, into = c("Row", "Column"), sep = "(?<=[[:upper:]])")
   Plate <- Plate %>% mutate_at(vars(Column), as.numeric)
-  Dose <- c(NA, "5 µM", "8 µM", "4 µM", "2 µM", "1 µM", "0.5 µM", "0.25 µM", "0.125 µM", "0.0625 µM", "Vehicle", NA)
+  Dose <- c(NA, "5 µM lomitapide", "8 µM", "4 µM", "2 µM", "1 µM", "0.5 µM", "0.25 µM", "0.125 µM", "0.0625 µM", "Vehicle", NA)
   Drug <- c(NA, "Lomitapide", "A", "A", "A", "A", "A", "A", "A", "A", "Vehicle", NA)
   
   ##Remove drug/dose NAs 
@@ -168,91 +132,63 @@ for (document in files){
                                                                    sep = "_", 
                                                                    remove = FALSE, 
                                                                    convert = TRUE, 
-                                                                   extra = "drop") %>% 
-    left_join(Library_decoder, by = c("ChemDiv_rescreen_plate"), keep = TRUE) #this works but its being a pain in the ass right now, need to incorporate the columns into All_data and Summary_data
-  
-  ##Outlier handling here, could help wiht Vehicle values issues!
-    
-  #Calculate the mean and median of the 8 vehicle samples
-  Vehicle_Values <- Plate %>% group_by(Column) %>% filter(Column == 11) %>% pull(RLU)
-  
-  #Plate analysis
-  Plate <- Plate %>% mutate(Fold_Change = RLU/mean(Vehicle_Values, na.rm = TRUE), 
-                            log2_RLU = log2(RLU), 
-                            Difference = log2_RLU-log2(median(Vehicle_Values, na.rm = TRUE)), 
-                            log2_Fold_Change = log2(Fold_Change))
-  
-  #Summary statistics
-  Plate_summary <- Plate %>% group_by(Column) %>% summarise(Sample_size = length(log2_RLU[!is.na(log2_RLU)]),
-                                                            hsSSMD = SSMD_hs(Difference),
-                                                            qcSSMD = SSMD_qc(RLU, Vehicle_Values),
-                                                            Average_RLU = mean(RLU, na.rm = TRUE), 
-                                                            log2_Average_Fold_Change = log2(mean(Fold_Change, na.rm = TRUE)))
- 
-  Plate_summary <- Plate_summary %>% add_column(Dose = Dose,
-                                                Drug = Drug,
-                                                Date_of_read = rep(Date_of_read),
-                                                Filename = rep(name)) %>% separate(col = Filename, 
-                                                                                   into = c("ChemDiv_rescreen_plate"), 
-                                                                                   sep = "_", 
-                                                                                   remove = FALSE,
-                                                                                   convert = TRUE,
-                                                                                   extra = "drop")
-  
-  #Individual plate graphing
-  #RLU boxplot
-  #p1 <- ggplot(Plate %>% filter(!is.na(Drug)), aes(x = factor(Dose, levels = c("Vehicle","5 µM","8 µM","4 µM","2 µM","1 µM")),y = RLU)) + 
-  #  scale_x_discrete(labels = c('label 1' = expression("Vehicle"))) +
-  #  geom_boxplot() +
-  #  labs(title = paste(name),
-  #       subtitle = "Boxplot of RLU",
-  #       x = "Drug treatment",
-  #       y = "Relative Luminescence Units (RLU)") +
-  #  facet_grid(cols = vars(factor(Drug, levels = c("Vehicle", "Lomitapide", "A", "B"))), scales = "free", space = "free")
-  #ggsave(filename = paste(name, "_graph.png", sep = ""), width = 7, height = 5)
-  #Fold change boxplot
-  #p2 <- ggplot(Plate %>% filter(!is.na(Drug)), aes(x = factor(Dose, levels = c("Vehicle","5 µM","8 µM","4 µM","2 µM","1 µM")),y = Fold_Change)) + 
-  #  scale_x_discrete(labels = c('label 1' = expression("Vehicle"))) +
-  #  geom_boxplot() +
-  #  labs(title = paste(name),
-  #       subtitle = "Boxplot of fold change",
-  #       x = "Drug treatment",
-  #       y = "Relative fold change") +
-  #  facet_grid(cols = vars(factor(Drug, levels = c("Vehicle", "Lomitapide", "A", "B"))), scales = "free", space = "free")
-  #ggsave(filename = paste(name, "_graphs.png", sep = ""), width = 15, height = 7.5, arrangeGrob(p1, p2, ncol = 2, widths = c(1,1)))
-  
+                                                                   extra = "drop")
   #Add to C...
   All_plates <- All_plates %>% add_row(Plate)
-  Summary_data <- Summary_data %>% add_row(Plate_summary)
+  }
+
+All_plates <- All_plates %>% left_join(Library_decoder, by = c("ChemDiv_rescreen_plate"), keep = TRUE) %>%
+  filter(Drug != "NA") %>%
+  filter(RLU != "NA")
+
+dir.create("./Output_data", showWarnings = FALSE)
+
+Drug_list <- All_plates$Drug_name[!duplicated(All_plates$Drug_name)]
+
+for (i in Drug_list) {
+  if (nrow(All_plates %>% filter(Drug_name == i)) == 0) {next}
   
-  #matrix generation - this is mostly wrong at the momment, but still helpful to do, worth fixing up
-  RLUmatrix <- matrix(Plate$RLU, ncol = 12, byrow = T)
-  rownames(RLUmatrix) <- c("1","2","3","4","5","6","7","8")
-  colnames(RLUmatrix) <- c(paste(name,"empty"),
-                           paste(name,"5 µM lomitapide"),
-                           paste(name,"8 µM Drug A"),
-                           paste(name,"4 µM Drug A"),
-                           paste(name,"2 µM Drug A"),
-                           paste(name,"1 µM Drug A"),
-                           paste(name,"8 µM Drug B"),
-                           paste(name,"4 µM Drug B"),
-                           paste(name,"2 µM Drug B"),
-                           paste(name,"1 µM Drug B"),
-                           paste(name,"vehicle"),
-                           paste(name,"empty"))
+  dir.create(path = paste("./Output_data/",i, sep = ""), showWarnings = FALSE)
+  All_plates.i <- All_plates %>% filter(Drug_name == i)
+  Define_outliers(All_plates.i)
+  Outlier.count <- All_plates.outliers %>% filter(Outlier == "Outlier") %>% nrow(.)
+  Define_y_limit(All_plates.outliers)
+    
+  sink(file = paste("./Output_data/",i,"/",i,".txt", sep = ""))
+  cat("ANOVA results\n")
+  print(All_plates.outliers %>% 
+          filter(Outlier == "Normal") %>% 
+          compare_means(formula = RLU~Dose, 
+                        method = "anova"))
+  cat("\nPairwise t test results\n")
+  print(All_plates.outliers %>% 
+          filter(Outlier == "Normal") %>% 
+          compare_means(formula = RLU~Dose,
+                        ref.group = "Vehicle", 
+                        p.adjust.method = "bonf", 
+                        method = "t.test") %>% 
+          arrange(factor(group2, levels = c(
+            "5 µM lomitapide",
+            "0.0625 µM",
+            "0.125 µM",
+            "0.25 µM",
+            "0.5 µM",
+            "1 µM",
+            "2 µM",
+            "4 µM",
+            "8 µM"))))
+  cat("\nns: p > 0.05\n*: p <= 0.05\n**: p <= 0.01\n***: p <= 0.001\n****: p <= 0.0001\n")
+  sink(file = NULL)
   
-  ##Export to excel file below ##Necessary? i think this could be really helpful for whoever goes back to this? Maybe just print out as is?
-  #Plate_sheet <- createWorkbook()
-  #addWorksheet(Plate_sheet, "Raw data matrix")
-  #addWorksheet(Plate_sheet, "Data frame")
-  #addWorksheet(Plate_sheet, "Summary statistics")
-  #writeData(Plate_sheet, sheet = "Raw data matrix", x = RLUmatrix, rowNames = TRUE, keepNA = TRUE)
-  #writeData(Plate_sheet, sheet = "Data frame", x = Plate, rowNames = FALSE, keepNA = TRUE)
-  #writeData(Plate_sheet, sheet = "Summary statistics", x = Plate_summary, rowNames = FALSE, keepNA = TRUE)
-  #FN <- paste(name, ".xlsx", sep = "")
-  #saveWorkbook(Plate_sheet, file = FN)
+  plot_All_plates_data(All_plates.outliers %>% filter(Outlier == "Normal"))
+  ggsave(m, filename = paste(i, ".eps", sep = ""), width = 4, height = 5, path = paste("./Output_data/",i, sep = ""))
 }
 
-#All_plates <- All_plates %>% drop_na(Drug)
-#Separate All plates and summary data? New function for graphing, just work from All_plates, will be perfectly fine to do and out of the same loop
-#
+
+
+
+
+
+
+
+
